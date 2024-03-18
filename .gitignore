@@ -1,3 +1,17 @@
+# env virtuel
 env/
+
+#Caches et logs
+*.pyc
 __pycache__
+.cache/
+geckodriver.log
+
+#Images
+fbapp/static/*.jpg
+
+#Bdd
 app.db
+
+#Secrets
+config.py
