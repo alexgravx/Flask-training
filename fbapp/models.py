@@ -12,7 +12,7 @@ class Gender(enum.Enum):
     other = 2
 
 class Content(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     description = db.Column(db.String(200), nullable=False)
     gender = db.Column(db.Enum(Gender), nullable=False)
 
