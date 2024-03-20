@@ -5,7 +5,7 @@
 import os
 
 SECRET_KEY = '#d#JCqTTW\nilK\\7m\x0bp#\tj~#H'
-FB_APP_ID = 1200420960103822
+FB_APP_ID = 1465061084361917
 
 
 # Database initialization
