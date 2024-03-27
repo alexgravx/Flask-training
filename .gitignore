@@ -6,6 +6,7 @@ env/
 __pycache__
 .cache/
 geckodriver.log
+fbapp/tests/*.db
 
 #Images
 fbapp/static/*.jpg
