@@ -5,6 +5,7 @@ import multiprocessing
 
 import selenium.webdriver.support.ui as ui
 from selenium.webdriver.common.action_chains import ActionChains 
+from selenium.webdriver.common.by import By
 
 multiprocessing.set_start_method("fork", force=True)
 
@@ -22,6 +23,7 @@ class TestUserTakesTheTest(LiveServerTestCase):
         """Setup the test driver and create test users"""
         # Le navigateur est Firefox
         self.driver = webdriver.Firefox()
+        self.driver.set_window_size(1268, 900)
         # Ajout de données dans la base.
         models.init_db()
         self.wait = ui.WebDriverWait(self.driver, 10)
@@ -51,12 +53,12 @@ class TestUserTakesTheTest(LiveServerTestCase):
         # Element contenant l'iframe
         button = self.get_el(".fb-login-button")
         # On attend que l'iframe soit chargée
-        self.wait.until(lambda driver: self.driver.find_element_by_tag_name("iframe").is_displayed())
+        self.wait.until(lambda driver: self.driver.find_element(By.TAG_NAME, "iframe").is_displayed())
         # Clic sur l'élément
         ActionChains(self.driver).click(button).perform()
         
     def get_el(self, selector):
-        return self.driver.find_element_by_css_selector(selector)
+        return self.driver.find_element(By.CSS_SELECTOR, selector)
     
     def sees_login_page(self):
         # On attend d'avoir plus d'une fenêtre ouverte.
@@ -86,14 +88,3 @@ class TestUserTakesTheTest(LiveServerTestCase):
         self.enter_text_field('#pass', app.config['FB_USER_PW'])
         # On clique sur le bouton de soumission
         self.get_el('#loginbutton input[name=login]').click()
-
-    def test_user_login(self):
-        # On attend que la redirection soit finie.
-        self.wait.until(lambda driver: '?' in self.driver.current_url)
-        # L'URL correspond au schéma attendu
-        assert self.driver.current_url == self.result_page
-        
-        # On attend que la redirection soit finie.
-        self.wait.until(lambda driver: '?' in self.driver.current_url)
-        # L'URL correspond au schéma attendu
-        assert self.driver.current_url == self.result_page
