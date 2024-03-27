@@ -5,7 +5,11 @@
 import os
 
 SECRET_KEY = '#d#JCqTTW\nilK\\7m\x0bp#\tj~#H'
-FB_APP_ID = 1465061084361917
+
+if os.environ.get('DATABASE_URL') is None:
+    FB_APP_ID = 1465061084361917
+else:
+    FB_APP_ID = 125115950532236
 
 
 # Database initialization
