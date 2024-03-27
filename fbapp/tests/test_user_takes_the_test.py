@@ -1,9 +1,12 @@
 from flask import url_for
 from flask_testing import LiveServerTestCase
 from selenium import webdriver
+import multiprocessing
 
 import selenium.webdriver.support.ui as ui
 from selenium.webdriver.common.action_chains import ActionChains 
+
+multiprocessing.set_start_method("fork", force=True)
 
 from .. import app
 from .. import models
@@ -21,7 +24,7 @@ class TestUserTakesTheTest(LiveServerTestCase):
         self.driver = webdriver.Firefox()
         # Ajout de données dans la base.
         models.init_db()
-        self.wait = ui.WebDriverWait(self.driver, 1000)
+        self.wait = ui.WebDriverWait(self.driver, 10)
         self.result_page = url_for('result',
                             first_name=app.config['FB_USER_NAME'],
                             id=app.config['FB_USER_ID'],
@@ -31,6 +34,18 @@ class TestUserTakesTheTest(LiveServerTestCase):
     # Méthode exécutée après chaque test
     def tearDown(self):
         self.driver.quit()
+
+    def test_user_login(self):
+        self.driver.get(self.get_server_url())
+        self.clicks_on_login()
+        self.sees_login_page()
+        self.submits_form()
+        # On revient à notre site.
+        self.driver.switch_to.window(self.driver.window_handles[0])
+        # On attend que la fenêtre de Facebook se ferme,
+        # donc de n'avoir plus qu'une fenêtre d'ouverte.
+        self.wait.until(lambda driver: len(self.driver.window_handles) == 1)
+        assert self.driver.current_url == 'http://localhost:8943/'
         
     def clicks_on_login(self):
         # Element contenant l'iframe
@@ -71,18 +86,6 @@ class TestUserTakesTheTest(LiveServerTestCase):
         self.enter_text_field('#pass', app.config['FB_USER_PW'])
         # On clique sur le bouton de soumission
         self.get_el('#loginbutton input[name=login]').click()
-
-    def test_user_login(self):
-        self.driver.get(self.get_server_url())
-        self.clicks_on_login()
-        self.sees_login_page()
-        self.submits_form()
-        # On revient à notre site.
-        self.driver.switch_to.window(self.driver.window_handles[0])
-        # On attend que la fenêtre de Facebook se ferme,
-        # donc de n'avoir plus qu'une fenêtre d'ouverte.
-        self.wait.until(lambda driver: len(self.driver.window_handles) == 1)
-        assert self.driver.current_url == 'http://localhost:8943/'
 
     def test_user_login(self):
         # On attend que la redirection soit finie.
